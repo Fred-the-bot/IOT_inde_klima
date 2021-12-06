@@ -92,6 +92,6 @@ while (i<5):
          while(i<100):
              if (reset_button.value() == 1):
                  sys.exit()
-                 time.sleep(6)
+             time.sleep(6)
          i=0
          
