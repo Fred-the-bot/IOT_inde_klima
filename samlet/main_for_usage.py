@@ -4,8 +4,9 @@
 #og laver en HTTP.POST til en server der ligger lokalt i børnehaven
 #for at stoppe programmet skal man bare holde knappen der sidder i boksen inde i ca 6 sekunder
 
+
 from umqtt.simple import MQTTClient
-from machine import ADC, Pin
+from machine import ADC, Pin, reset
 import time
 import math 
 import dht
@@ -83,16 +84,17 @@ while (i<5):
          loud=tabel(int(volume))
 
          upload = ujson.dumps({ 'Temp': temp, 'fugt': hum, 'lyd': loud }) #Tager og "omformatere" micropython tekster til brugbar JSON format
-
          if station.isconnected():
              test = urequests.post("https://e36f7ff8-a58d-4076-b0aa-f7ffdc8efaf6.mock.pstmn.io", headers = {'content-type': 'application/json'}, data=upload) #poster vores tekst i formatet (IP,HEADER,DATA)
+             time.sleep(10)#giver programmet 10 sekunder til at udføre sin POST før forbindelsen lukkes
+             test.close() #lukker forbindelsen efter hvert POST da den ellers vil lave "memory overflow"
          else:
-            station.connect(secret.ssid, secret.passwd)
+             station.connect(secret.ssid, secret.passwd)
          i=0
          while(i<100):
              i=i+1
              if (reset_button.value() == 1):
-                 sys.exit()
+                  sys.exit()
              time.sleep(6)
-         i=0
+         reset()
          
