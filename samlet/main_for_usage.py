@@ -90,6 +90,7 @@ while (i<5):
             station.connect(secret.ssid, secret.passwd)
          i=0
          while(i<100):
+             i=i+1
              if (reset_button.value() == 1):
                  sys.exit()
              time.sleep(6)
