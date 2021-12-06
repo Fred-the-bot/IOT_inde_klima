@@ -65,7 +65,6 @@ hum = d.humidity()
 
 while (i<5):
      if (reset_button.value() == 1):
-         print("knappen er trykket, lukker programmet")
          sys.exit()
      value=adc.read()+value
      i=i+1
@@ -74,8 +73,6 @@ while (i<5):
          d.measure()
          temp = d.temperature()
          hum = d.humidity()
-         print(temp, "C")
-         print(hum, "% Fugt")
          calibration=(0.0596*(value/5)+116.57)/66+65 #kalibreret via 120+ målinger ved ca. 66dB.
          calibration=math.ceil(calibration) #Runder resultatet til nærmeste integer
          volume=myround(calibration) # runder resultatet til nærmeste brugbare værdig til tabellen
@@ -90,11 +87,10 @@ while (i<5):
          if station.isconnected():
              test = urequests.post("https://e36f7ff8-a58d-4076-b0aa-f7ffdc8efaf6.mock.pstmn.io", headers = {'content-type': 'application/json'}, data=upload) #poster vores tekst i formatet (IP,HEADER,DATA)
          else:
-             print("error, could not connect to the wifi trying to connect and starting over.")
+            station.connect(secret.ssid, secret.passwd)
          i=0
          while(i<100):
              if (reset_button.value() == 1):
-                 print("knappen er trykket, lukker programmet")
                  sys.exit()
                  time.sleep(6)
          i=0
