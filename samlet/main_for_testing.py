@@ -7,8 +7,8 @@ import network
 import urequests
 import ujson
 import secret
-
-
+import sys
+reset_button = Pin(13)
 adc = ADC(Pin(36)) #A4 på esp32
 adc.read()
 d = dht.DHT11(Pin(4))
@@ -41,7 +41,7 @@ def tabel(j):
 
 #forbinder sig til netværket med vores "hemmelige" wifi navn og "hemmelige" kode
 station = network.WLAN(network.STA_IF)
-station.active(True)
+station.active(True) 
 if not station.isconnected():
     station.connect(secret.ssid, secret.passwd)
 
@@ -61,6 +61,9 @@ while (i<5):
      value=adc.read()+value
      i=i+1
      time.sleep(0.5)
+     if (reset_button.value() == 1):
+         print("knappen er trykket")
+         sys.exit()
      if (i==5):
          d.measure()
          temp = d.temperature()
@@ -82,7 +85,6 @@ upload = ujson.dumps({ 'Temp': temp, 'fugt': hum, 'lyd': loud }) #Tager og "omfo
 
 #https://techtutorialsx.com/2017/06/18/esp32-esp8266-micropython-http-post-requests/
 if station.isconnected():
-    print("network config:",station.ifconfig())
     test = urequests.post("https://e36f7ff8-a58d-4076-b0aa-f7ffdc8efaf6.mock.pstmn.io", headers = {'content-type': 'application/json'}, data=upload) #poster vores tekst i formatet (IP,HEADER,DATA)
 else:
     print("error, could not connect to the wifi")
